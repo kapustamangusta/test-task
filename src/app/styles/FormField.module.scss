@@ -1,0 +1,85 @@
+
+
+.field {
+	display: grid;
+	grid-template-columns: 40% auto;
+	align-items: center;
+
+	grid-template-areas:
+		"label input"
+		"label error ";
+
+	.label {
+		grid-area: label;
+		font-weight: 400;
+		display: inline-block;
+		font-size: 21px;
+		line-height: 19px;
+	}
+	.errorBorder{
+		border: 1px solid red;
+	}
+	input,
+	select {
+		grid-area: input;
+		width: 100%;
+		padding: 4px;
+		border: 1px solid #999999;
+		margin-top: 4px;
+		font-size: 16px;
+	}
+
+	.wrapper{
+		grid-area: input;
+		input{
+			width: 12px;
+			margin-right: 10px;
+		}
+		.checkboxlabel{
+			font-size: 14px;
+			line-height: 19px;
+		}
+	}
+
+	
+
+	
+
+	.error {
+		color: red;
+		font-size: 12px;
+		line-height: 20px;
+		margin-top: 4px;
+	}
+	.checkboxField {
+		display: flex;
+		align-items: center;
+
+		.label {
+			margin-left: 0.5rem;
+			font-size: 1rem;
+		}
+	}
+}
+
+.requiredStar {
+	color: red;
+	margin-left: 4px;
+}
+
+
+@media(max-width: 765px) {
+
+.field {
+		display: grid;
+		grid-template-columns: auto;
+		align-items: center;
+
+		grid-template-areas:
+			"label "
+			"input"
+			"error";
+
+	}
+
+}
