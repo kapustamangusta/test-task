@@ -3,12 +3,23 @@
 import styles from './/Form.module.scss';
 import { useEffect, useState } from 'react';
 import { CheckboxField, InputField, PhoneField, SelectField, Submit } from '..';
-import { FormProps } from "./Form.props";
 import { City } from "@/app/interfaces/City.interface";
+import { z } from "zod";
+
+interface FormData {
+	name: string,
+	city: string,
+	phone: string,
+	email: string,
+	password: string,
+	confirmPassword: string,
+	agree: boolean,
+}
 
 
-export const Form = ({ setGreetingName }: FormProps) => {
-	const [formData, setFormData] = useState({
+
+export const Form = () => {
+	const [formData, setFormData] = useState<FormData>({
 		name: '',
 		city: '',
 		phone: '',
@@ -18,20 +29,30 @@ export const Form = ({ setGreetingName }: FormProps) => {
 		agree: false,
 	});
 
-	const [errors, setErrors] = useState({
-		name: '',
-		city: '',
-		email: '',
-		password: '',
-		confirmPassword: '',
+	const [errors, setErrors] = useState<z.ZodFormattedError<{
+		name: string,
+		city: string,
+		email: string,
+		password: string,
+		confirmPassword: string,
+}, string>>({
+		_errors: []
 	});
 
-	const [cities, setCities] = useState([] as City[]);
+	const [cities, setCities] = useState<City[]>([]);
+
+	const [greetingName, setGreetingName] = useState('Человек');
+
 
 	const [submissionTime, setSubmissionTime] = useState<string | null>(null);
 
 
 	useEffect(() => {
+		const savedName = localStorage.getItem('username');
+		if (savedName) {
+			setGreetingName(savedName);
+		}
+
 		const fetchCities = async () => {
 			try {
 				const response = await fetch('/api/cities');
@@ -61,37 +82,40 @@ export const Form = ({ setGreetingName }: FormProps) => {
 
 
 	const validateForm = () => {
-		const newErrors: any = {};
-		// Проверка обязательных полей
-		if (!formData.name)
-			newErrors.name = 'Имя обязательно для заполнения';
-		else if (!/^[А-Яа-яЁё]{2,}$/.test(formData.name))
-			newErrors.name = "Имя должно содержать не менее 2 символов и только буквы кириллицы";
+		const formSchema = z.object({
+			name: z
+				.string()
+				.min(2, "Имя должно содержать не менее 2 символов")
+				.regex(/^[А-Яа-яЁё]{2,}$/, "Имя должно содержать только буквы кириллицы"),
+			city: z
+				.string()
+				.min(1, 'Выберите город'),
+			email: z
+				.string()
+				.email("Некорректный формат email"),
+			password: z
+				.string()
+				.min(6, 'Пароль должен содержать не менее 6 символов')
+				.regex(/^[A-Za-z]+$/, 'Пароль должен состоять только из латинских букв'),
+			confirmPassword: z.string(),
+			agree: z.boolean()
+			
+		}).refine((data) => data.password === data.confirmPassword, {
+			message: "Пароли должны совпадать",
+			path: ["confirmPassword"], 
+		}).refine((data) => !data.agree  || (data.agree && data.email), {
+			message: "Email обязателен при выборе чекбокса",
+			path: ["email"],
+		});
 
+		const validationResult = formSchema.safeParse(formData);
 
-		if (!formData.city) newErrors.city = 'Выберите город';
-
-		// Если выбран чекбокс, email становится обязательным
-		if (formData.agree && !formData.email)
-			newErrors.email = 'Email обязателен при выборе чекбокса';
-		else if (formData.email && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
-			newErrors.email = 'Некорректный формат email';
+		if (!validationResult.success){
+			setErrors(validationResult.error.format())
+			console.log(validationResult.error.format())
 		}
 
-		if (!formData.password)
-			newErrors.password = "Укажите пароль";
-		else if (!/^[A-Za-z]{6,}$/.test(formData.password))
-			newErrors.password = "Пароль должен содержать не менее 6 символов и состоять только из латинских букв";
-
-
-		// Валидация подтверждения пароля
-		if (formData.password !== formData.confirmPassword) {
-			newErrors.confirmPassword = "Пароли должны совпадать";
-		}
-
-		setErrors(newErrors);
-
-		return Object.keys(newErrors).length === 0;
+		return Object.keys(errors).length === 0;
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -162,63 +186,55 @@ export const Form = ({ setGreetingName }: FormProps) => {
 
 	return (
 		<form className={styles.form} onSubmit={handleSubmit} noValidate={true}>
+			<h1 className={styles.form__title}>Здравствуйте, <span className={styles.name}>{greetingName}</span></h1>
 			{/* Имя */}
 
 			<InputField
-				htmlFor="name"
 				labelText="Имя"
 				type='text'
-				id='name'
 				name='name'
 				placeholder='Введите имя'
 				value={formData.name}
 				onChange={handleInputChange}
-				error={errors.name}
+				error={errors.name?._errors.join(', ')}
 				required
 			/>
 
 
 			{/* Город */}
 			<SelectField
-				htmlFor="city"
 				labelText='Ваш город'
 				items={cities.map((city: City) => city.city)}
-				id="city"
 				name="city"
 				value={formData.city}
 				onChange={handleInputChange}
-				error={errors.city}
+				error={errors.city?._errors.join(', ')}
 				required
 			/>
 
 			<hr className={styles.divider} />
 
 
-
 			{/* пароль */}
 			<InputField
-				htmlFor="password"
 				labelText="Пароль"
 				type='password'
-				id='password'
 				name='password'
 				placeholder='Введите пароль'
 				value={formData.password}
-				error={errors.password}
+				error={errors.password?._errors.join(', ')}
 				onChange={handleInputChange}
 				required
 			/>
 
 			<InputField
-				htmlFor="confirmPassword"
 				labelText="Пароль еще раз"
 				type='password'
-				id='confirmPassword'
 				name='confirmPassword'
 				placeholder='Повторите пароль'
 				value={formData.confirmPassword}
 				onChange={handleInputChange}
-				error={errors.confirmPassword}
+				error={errors.confirmPassword?._errors.join(', ')}
 				required
 			/>
 
@@ -226,31 +242,26 @@ export const Form = ({ setGreetingName }: FormProps) => {
 
 
 			<PhoneField
-				htmlFor="phone"
 				labelText='Номер телефона'
 				placeholder='+7 (999) 999-99-99'
 				value={formData.phone}
 				onChange={handleInputChange}
-				id="phone"
 				name="phone"
 			/>
 
 
 			<InputField
-				htmlFor="email"
 				labelText="Электронная почта"
 				type="email"
-				id="email"
 				name="email"
 				value={formData.email}
 				onChange={handleInputChange}
 				placeholder='Введите почту'
-				error={errors.email}
+				error={errors.email?._errors.join(', ')}
 				required={formData.agree}
 			/>
 
 			<CheckboxField
-				htmlFor={'agree'}
 				labelText={'Я согласен'}
 				labelCheckbox={'принимать актуальную информацию на емейл'}
 				name="agree"

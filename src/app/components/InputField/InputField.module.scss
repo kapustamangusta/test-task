@@ -1,0 +1,14 @@
+.input {
+	grid-area: input;
+	width: 100%;
+	padding: 4px;
+	border: 1px solid #999;
+	margin-top: 4px;
+	font-size: 16px;
+	cursor: pointer;
+
+	&_error {
+		border: 1px solid red;
+	}
+}
+

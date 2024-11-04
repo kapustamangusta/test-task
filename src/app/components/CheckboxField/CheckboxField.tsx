@@ -1,22 +1,22 @@
 
-import styles from './../../styles/FormField.module.scss';
+import { FormField } from '../FormField/FormField';
+import styles from './CheckboxField.module.scss';
 import { CheckboxFieldProps } from "./CheckboxField.props";
 
-export const CheckboxField = ({ htmlFor, labelText,labelCheckbox, id, name, checked, onChange }: CheckboxFieldProps ): JSX.Element => {
-	return (<div className={styles.field}>
-		<label className={styles.label}>{labelText}</label>
+export const CheckboxField = ({ labelText,labelCheckbox, name, checked, onChange }: CheckboxFieldProps ): JSX.Element => {
+	return (<FormField label={labelText}  htmlFor={name ?? ""}>
 		<div className={styles.wrapper}>
 			<input
 				className={styles.input}
 				type="checkbox"
-				id={id}
 				name={name}
 				checked={checked}
 				onChange={onChange}
 			/>
-			<label className={styles.checkboxlabel} htmlFor={htmlFor}>
+			<label className={styles.checkboxlabel} htmlFor={name}>
 
 				{labelCheckbox}</label>
 		</div>
-	</div>);
+	</FormField>
+	);
 }

@@ -16,7 +16,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-input-mask": "^2.0.4",
-    "sass": "^1.80.2"
+    "sass": "^1.80.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",

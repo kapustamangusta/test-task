@@ -2,30 +2,29 @@
 
 
 import InputMask from '@react-input/mask/InputMask';
-import styles from './../../styles/FormField.module.scss';
+import styles from './../InputField/InputField.module.scss';
 import { PhoneFieldProps } from "./PhoneField.props";
 import cn from 'classnames';
 import { JSX } from 'react';
+import { FormField } from '../FormField/FormField';
 
-export const PhoneField = ({ htmlFor, labelText, required, placeholder, error, id, name, value, onChange }: PhoneFieldProps): JSX.Element => {
+export const PhoneField = ({  labelText, required, placeholder, error, name, value, onChange }: PhoneFieldProps): JSX.Element => {
 	
-	return (<div className={styles.field}>
-		<label className={styles.label} htmlFor={htmlFor}>
-			{labelText} <span className={styles.requiredStar}>{required ? '*' : ''}</span>
-		</label>
-		<InputMask 
-			mask="+7 (___) ___-__-__"
-			replacement={{ _: /\d/ }}
-			placeholder={placeholder}
-			className={cn(styles.input, {
-				[styles.errorBorder]: error !== '' && error !== undefined
-			})}
-			type="tel"
-			id={id}
-			name={name}
-			value={value}
-			onChange={onChange}
-		/>
+	return (
+		<FormField label={labelText} required={required ?? false} htmlFor={name ?? ""} error={error}>
+			<InputMask
+				mask="+7 (___) ___-__-__"
+				replacement={{ _: /\d/ }}
+				placeholder={placeholder}
+				className={cn(styles.input, {
+					[styles.input_error]: error !== '' && error !== undefined
+				})}
+				type="tel"
+				name={name}
+				value={value}
+				onChange={onChange}
+			/>
+		</FormField>
 			
-	</div>);
+	);
 }

@@ -1,9 +1,21 @@
 .form {
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	justify-content: center;
+	margin: 24px auto;
+	gap: 40px;
 	width: 560px;
 
+	&__title{
+		color: #666666;
+		font-weight: bold;
+		font-size: 30px;
+		line-height: 34px;
+	
+		.name {
+			color: black;
+		}
+	}
 }
 
 
@@ -11,7 +23,6 @@
 	border: none;
 	height: 1px;
 	background-color: #E5E4E4;
-	margin: 24px 0;
 }
 
 
@@ -19,11 +30,9 @@
 @media(max-width: 765px) {
 
 	.form {
-			display: flex;
-			flex-direction: column;
-			gap: 1rem;
-			width: 345px;
-	
-		}
+		display: flex;
+		flex-direction: column;
+		width: 345px;
+	}
 
 }

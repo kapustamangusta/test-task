@@ -1,0 +1,51 @@
+.formfield {
+	display: grid;
+	grid-template-columns: 40% auto;
+	align-items: center;
+
+	grid-template-areas:
+		"label input"
+		". error";
+
+	&__label {
+		grid-area: label;
+		font-weight: 400;
+		display: inline-block;
+		font-size: 21px;
+		line-height: 19px;
+	}
+	&__input{
+		grid-area: input;
+	}
+
+	&__error{
+		grid-area: error;
+		color: red;
+		font-size: 12px;
+		line-height: 20px;
+		margin-top: 4px;
+	}
+	
+}
+
+.requiredStar {
+	color: red;
+	margin-left: 4px;
+}
+
+
+@media(max-width: 765px) {
+
+	.formfield {
+		display: grid;
+		grid-template-columns: auto;
+		align-items: center;
+
+		grid-template-areas:
+			"label "
+			"input"
+			"error";
+
+	}
+
+}

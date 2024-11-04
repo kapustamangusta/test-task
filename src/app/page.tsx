@@ -15,11 +15,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <div >
-        <h1 className={styles.title}>Здравствуйте, <span className={styles.name}>{greetingName}</span></h1>
-        <Form setGreetingName={setGreetingName} />
-      </div>
-    </div>
+
+
+    <Form />
+
+
   );
 }

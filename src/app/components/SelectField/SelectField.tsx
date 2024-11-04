@@ -1,17 +1,14 @@
-import styles from './../../styles/FormField.module.scss';
+import { FormField } from '../FormField/FormField';
+import styles from './SelectField.module.scss';
 import { SelectFieldProps } from "./SelectField.props";
 import cn from 'classnames';
 
-export const SelectField = ({items, htmlFor, labelText, required, error, id, name, value, onChange }: SelectFieldProps): JSX.Element => {
-	return (<div className={styles.field}>
-		<label className={styles.label} htmlFor={htmlFor}>
-			{labelText}<span className={styles.requiredStar}>{required ? '*' : ''}</span>
-		</label>
+export const SelectField = ({items, labelText, required, error, name, value, onChange }: SelectFieldProps): JSX.Element => {
+	return (<FormField label={labelText} required={required ?? false} htmlFor={name ?? ""} error={error}>
 		<select
 			className={cn(styles.select, {
-				[styles.errorBorder]: error !== '' && error !== undefined
+				[styles.select_error]: error !== '' && error !== undefined
 			})}
-			id={id}
 			name={name}
 			value={value}
 			onChange={onChange}
@@ -24,6 +21,9 @@ export const SelectField = ({items, htmlFor, labelText, required, error, id, nam
 				</option>
 			))}
 		</select>
-		{error && <p className={styles.error}>{error}</p>}
-	</div>);
+	</FormField>
+		
+		
+
+	);
 }
