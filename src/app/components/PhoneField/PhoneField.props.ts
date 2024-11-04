@@ -4,6 +4,5 @@ export interface PhoneFieldProps extends DetailedHTMLProps<InputHTMLAttributes<H
 	htmlFor: string,
 	labelText: string,
 	error?: string,
-	mask: string | (string | RegExp)[],
 
 }

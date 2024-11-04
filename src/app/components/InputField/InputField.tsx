@@ -6,7 +6,7 @@ import cn from 'classnames';
 export const InputField = ({ htmlFor, labelText, required, error, type, id, name, placeholder, value, onChange }: InputFieldProps ): JSX.Element => {
 	return (<div className={styles.field}>
 		<label className={styles.label} htmlFor={htmlFor}>
-			{labelText} <span className={styles.requiredStar}>{required ? '*': ''}</span>
+			{labelText}<span className={styles.requiredStar}>{required ? '*': ''}</span>
 		</label>
 		<input
 			className={cn(styles.button,{

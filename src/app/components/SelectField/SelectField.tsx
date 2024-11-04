@@ -5,10 +5,10 @@ import cn from 'classnames';
 export const SelectField = ({items, htmlFor, labelText, required, error, id, name, value, onChange }: SelectFieldProps): JSX.Element => {
 	return (<div className={styles.field}>
 		<label className={styles.label} htmlFor={htmlFor}>
-			{labelText} <span className={styles.requiredStar}>{required ? '*' : ''}</span>
+			{labelText}<span className={styles.requiredStar}>{required ? '*' : ''}</span>
 		</label>
 		<select
-			className={cn(styles.button, {
+			className={cn(styles.select, {
 				[styles.errorBorder]: error !== '' && error !== undefined
 			})}
 			id={id}

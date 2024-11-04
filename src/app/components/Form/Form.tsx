@@ -38,7 +38,7 @@ export const Form = ({ setGreetingName }: FormProps) => {
 				const cities = await response.json() as City[];
 
 				// Фильтруем города с населением больше 50,000 и сортируем по алфавиту
-				var filteredCities = cities
+				let filteredCities = cities
 					.filter(city => city.population > 50000)
 					.sort((a, b) => a.city.localeCompare(b.city));
 
@@ -191,7 +191,7 @@ export const Form = ({ setGreetingName }: FormProps) => {
 				required
 			/>
 
-			<hr className="divider" />
+			<hr className={styles.divider} />
 
 
 
@@ -222,13 +222,12 @@ export const Form = ({ setGreetingName }: FormProps) => {
 				required
 			/>
 
-			<hr className="divider" />
+			<hr className={styles.divider} />
 
 
 			<PhoneField
 				htmlFor="phone"
-				labelText='Телефон'
-				mask="+7 (999) 999-99-99"
+				labelText='Номер телефона'
 				placeholder='+7 (999) 999-99-99'
 				value={formData.phone}
 				onChange={handleInputChange}
@@ -239,7 +238,7 @@ export const Form = ({ setGreetingName }: FormProps) => {
 
 			<InputField
 				htmlFor="email"
-				labelText="Почта"
+				labelText="Электронная почта"
 				type="email"
 				id="email"
 				name="email"
