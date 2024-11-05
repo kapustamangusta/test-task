@@ -1,10 +1,11 @@
-.wrapper {
+.field {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 	grid-area: input;
 
 
-	.submitButton {
+	&__submit{
 		background-color: #71C838;
 		color: white;
 		padding: 10px 17px;
@@ -19,7 +20,7 @@
 		}
 	}
 
-	.lastUpdate {
+	&__lastUpdate {
 		text-align: left;
 		font-size: 12px;
 		line-height: 12px;
@@ -31,16 +32,17 @@
 @media(max-width: 765px) {
 
 
-	.wrapper{
+	.field{
 		display: grid;
 		grid-template-columns: auto;
 		align-items: center;
 		grid-template-areas:
 			"input";
+		&__submit {
+			grid-area: input;
+		}
 	}
-	.submitButton{
-		grid-area: input;
-	}
+	
 	
 
 }

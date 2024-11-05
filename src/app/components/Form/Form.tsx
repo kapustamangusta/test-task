@@ -7,6 +7,7 @@ import { City } from "@/app/interfaces/City.interface";
 import { z } from "zod";
 import {SubmitHandler, useForm, useWatch} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProps } from './Form.props';
 
 const formSchema = z.object({
 	name: z
@@ -41,10 +42,6 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export interface FormProps{
-	cities: City[]
-
-}
 
 
 export const Form = ({cities}: FormProps) => {

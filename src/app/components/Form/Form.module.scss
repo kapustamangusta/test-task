@@ -32,7 +32,9 @@
 	.form {
 		display: flex;
 		flex-direction: column;
-		width: 345px;
+		margin: 16px;
+		width: auto;
+		gap: 20px
 	}
 
 }

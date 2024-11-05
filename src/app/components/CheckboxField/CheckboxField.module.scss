@@ -1,13 +1,14 @@
-.wrapper {
+.field {
 	display: flex;
 	
 	
-	.input {
+	&__input{
 		width: 12px;
 		margin-right: 10px;
+		cursor: pointer;
 	}
 
-	.checkboxlabel {
+	&__checkboxlabel {
 		font-size: 14px;
 		line-height: 19px;
 	}

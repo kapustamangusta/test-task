@@ -20,6 +20,7 @@ export const PhoneField = ({  labelText, required, error, name, ...props}: Phone
 				})}
 				type="tel"
 				name={name}
+				id={name}
 				{...props}
 				
 			/>

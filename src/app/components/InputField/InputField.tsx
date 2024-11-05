@@ -11,11 +11,10 @@ export const InputField = ({ labelText, required, error, name,  ...props }: Inpu
 				className={cn(styles.input, {
 					[styles.input_error]: error !== '' && error !== undefined
 				})}
-
-				
 				{...props}
 				required
 				name={name}
+				id={name}
 			/>
 		</FormField>
 	);

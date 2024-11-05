@@ -5,14 +5,14 @@ import { CheckboxFieldProps } from "./CheckboxField.props";
 
 export const CheckboxField = ({ labelText,labelCheckbox, name, ...props }: CheckboxFieldProps ): JSX.Element => {
 	return (<FormField label={labelText}  htmlFor={name ?? ""}>
-		<div className={styles.wrapper}>
+		<div className={styles.field}>
 			<input
-				className={styles.input}
+				className={styles.field__input}
 				type="checkbox"
 				name={name}
 				{...props}
 			/>
-			<label className={styles.checkboxlabel} htmlFor={name}>
+			<label className={styles.field__checkboxlabel} htmlFor={name}>
 
 				{labelCheckbox}</label>
 		</div>

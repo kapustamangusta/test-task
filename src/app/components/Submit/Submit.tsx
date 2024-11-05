@@ -6,10 +6,10 @@ import { SubmitProps } from "./Submit.props";
 export const Submit = ({ submissionTime, isSubmiting }: SubmitProps ): JSX.Element => {
 	return (
 		<FormField>
-			<div className={styles.wrapper}>
-				<button disabled={isSubmiting} className={styles.submitButton} type="submit">Изменить</button>
+			<div className={styles.field}>
+				<button disabled={isSubmiting} className={styles.field__submit} type="submit">Изменить</button>
 				{submissionTime && (
-					<p className={styles.lastUpdate}>последние изменения: {submissionTime}</p>
+					<p className={styles.field__lastUpdate}>последние изменения: {submissionTime}</p>
 				)}
 			</div>
 		</FormField>

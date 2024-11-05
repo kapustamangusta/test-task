@@ -2,12 +2,27 @@
 .select {
 	grid-area: input;
 	width: 100%;
-	padding: 6px;
+	padding: 5px;
 	border: 1px solid #999;
 	margin-top: 4px;
 	font-size: 16px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
 	cursor: pointer;
+	&::-ms-expand{
+		display: none;
+	}
 	&_error{
 		border: 1px solid red;
 	}
+}
+.wrapper{
+	position: relative;
+}
+.wrapper::after{
+	content: url("./../../arrow.svg");
+	position: absolute;	
+	right: 10px;
+	top: 25%;
 }
