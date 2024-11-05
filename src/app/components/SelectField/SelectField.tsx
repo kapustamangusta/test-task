@@ -7,6 +7,7 @@ export const SelectField = ({items, labelText, required, error, name, ...props }
 	return (<FormField label={labelText} required={required ?? false} htmlFor={name ?? ""} error={error}>
 		<div className={styles.wrapper}>
 			<select
+				{...props}
 				className={cn(styles.select, {
 					[styles.select_error]: error !== '' && error !== undefined
 				})}

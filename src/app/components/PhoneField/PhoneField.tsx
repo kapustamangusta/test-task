@@ -13,6 +13,7 @@ export const PhoneField = ({  labelText, required, error, name, ...props}: Phone
 	return (
 		<FormField label={labelText} required={required ?? false} htmlFor={name ?? ""} error={error}>
 			<InputMask
+				{...props}
 				mask="+7 (___) ___-__-__"
 				replacement={{ _: /\d/ }}
 				className={cn(styles.input, {
@@ -21,8 +22,8 @@ export const PhoneField = ({  labelText, required, error, name, ...props}: Phone
 				type="tel"
 				name={name}
 				id={name}
-				{...props}
 				
+				placeholder="+7 (***) ***-**-**"
 			/>
 		</FormField>
 			
