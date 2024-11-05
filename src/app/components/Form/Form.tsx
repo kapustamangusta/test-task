@@ -5,44 +5,89 @@ import { useEffect, useState } from 'react';
 import { CheckboxField, InputField, PhoneField, SelectField, Submit } from '..';
 import { City } from "@/app/interfaces/City.interface";
 import { z } from "zod";
+import {SubmitHandler, useForm, useWatch} from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-interface FormData {
-	name: string,
-	city: string,
-	phone: string,
-	email: string,
-	password: string,
-	confirmPassword: string,
-	agree: boolean,
+const formSchema = z.object({
+	name: z
+		.string()
+		.min(2, "Имя должно содержать не менее 2 символов")
+		.regex(/^[А-Яа-яЁё]{2,}$/, "Имя должно содержать только буквы кириллицы"),
+	city: z
+		.string()
+		.min(1, 'Выберите город'),
+	phone: z.any(),
+	email: z
+		.string(),
+	password: z
+		.string()
+		.min(6, 'Пароль должен содержать не менее 6 символов')
+		.regex(/^[A-Za-z]+$/, 'Пароль должен состоять только из латинских букв'),
+	confirmPassword: z.string(),
+	agree: z.boolean()
+
+}).refine((data) => data.password === data.confirmPassword, {
+	message: "Пароли должны совпадать",
+	path: ["confirmPassword"],
+}).refine((data) => !data.agree || (data.agree && data.email), {
+	message: "Email обязателен при выборе чекбокса",
+	path: ["email"],
+}).refine((data) => !data.agree ||( data.agree && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)), {
+	message: "Введите корректный email",
+	path: ["email"],
+});
+
+
+
+type FormData = z.infer<typeof formSchema>;
+
+export interface FormProps{
+	cities: City[]
+
 }
 
 
+export const Form = ({cities}: FormProps) => {
+	const { register, handleSubmit, formState: { isSubmitting, errors, }, control, reset } = useForm<FormData>({
+			resolver: zodResolver(formSchema),
+		}
+	);
 
-export const Form = () => {
-	const [formData, setFormData] = useState<FormData>({
-		name: '',
-		city: '',
-		phone: '',
-		email: '',
-		password: '',
-		confirmPassword: '',
-		agree: false,
-	});
+	const agree = useWatch({control, name: 'agree'});
 
-	const [errors, setErrors] = useState<z.ZodFormattedError<{
-		name: string,
-		city: string,
-		email: string,
-		password: string,
-		confirmPassword: string,
-}, string>>({
-		_errors: []
-	});
+	const onSubmit: SubmitHandler<FormData> = async (data)=>{
+		try {
+			const response = await fetch('/api/submit-form', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
 
-	const [cities, setCities] = useState<City[]>([]);
+			const result = await response.json();
+			console.log(result.message);
+
+
+			// Устанавливаем текущее время как время отправки формы
+			const now = new Date();
+			setSubmissionTime(formatDate(now));
+
+			setGreetingName(data.name);
+
+			// Сохраняем имя в LocalStorage
+			localStorage.setItem('username', data.name);
+
+			// Очищаем форму
+			reset();
+
+		} catch (error) {
+			console.error('Ошибка при отправке формы:', error);
+		}
+	}
+
 
 	const [greetingName, setGreetingName] = useState('Человек');
-
 
 	const [submissionTime, setSubmissionTime] = useState<string | null>(null);
 
@@ -52,121 +97,11 @@ export const Form = () => {
 		if (savedName) {
 			setGreetingName(savedName);
 		}
-
-		const fetchCities = async () => {
-			try {
-				const response = await fetch('/api/cities');
-				const cities = await response.json() as City[];
-
-				// Фильтруем города с населением больше 50,000 и сортируем по алфавиту
-				let filteredCities = cities
-					.filter(city => city.population > 50000)
-					.sort((a, b) => a.city.localeCompare(b.city));
-
-				const cityWithMaxPopulation = filteredCities.reduce((prev, current) =>
-					prev.population > current.population ? prev : current
-				);
-
-				filteredCities = filteredCities.filter(city => city.city !== cityWithMaxPopulation.city);
-
-				filteredCities = [cityWithMaxPopulation, ...filteredCities]
-				setCities(filteredCities);
-			} catch (error) {
-				console.error('Ошибка при загрузке городов:', error);
-			}
-		};
-
-		fetchCities();
 	}, []);
 
 
 
-	const validateForm = () => {
-		const formSchema = z.object({
-			name: z
-				.string()
-				.min(2, "Имя должно содержать не менее 2 символов")
-				.regex(/^[А-Яа-яЁё]{2,}$/, "Имя должно содержать только буквы кириллицы"),
-			city: z
-				.string()
-				.min(1, 'Выберите город'),
-			email: z
-				.string()
-				.email("Некорректный формат email"),
-			password: z
-				.string()
-				.min(6, 'Пароль должен содержать не менее 6 символов')
-				.regex(/^[A-Za-z]+$/, 'Пароль должен состоять только из латинских букв'),
-			confirmPassword: z.string(),
-			agree: z.boolean()
-			
-		}).refine((data) => data.password === data.confirmPassword, {
-			message: "Пароли должны совпадать",
-			path: ["confirmPassword"], 
-		}).refine((data) => !data.agree  || (data.agree && data.email), {
-			message: "Email обязателен при выборе чекбокса",
-			path: ["email"],
-		});
-
-		const validationResult = formSchema.safeParse(formData);
-
-		if (!validationResult.success){
-			setErrors(validationResult.error.format())
-			console.log(validationResult.error.format())
-		}
-
-		return Object.keys(errors).length === 0;
-	};
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (validateForm()) {
-			try {
-				const response = await fetch('/api/submit-form', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData),
-				});
-
-				const result = await response.json();
-				console.log(result.message);
-
-
-				// Устанавливаем текущее время как время отправки формы
-				const now = new Date();
-				setSubmissionTime(formatDate(now));
-
-				setGreetingName(formData.name);
-
-				// Сохраняем имя в LocalStorage
-				localStorage.setItem('username', formData.name);
-
-				// Очищаем форму
-				setFormData({
-					name: '',
-					city: '',
-					phone: '',
-					email: '',
-					password: '',
-					confirmPassword: '',
-					agree: false,
-				});
-
-			} catch (error) {
-				console.error('Ошибка при отправке формы:', error);
-			}
-		}
-	};
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value, type, checked } = e.target;
-		setFormData({
-			...formData,
-			[name]: type === 'checkbox' ? checked : value,
-		});
-	};
+	
 
 	const formatDate = (date: Date): string => {
 		const options: Intl.DateTimeFormatOptions = {
@@ -181,22 +116,20 @@ export const Form = () => {
 			minute: '2-digit',
 		}); 
 
-		return `${formattedDate} в ${formattedTime}`;
+		return `${formattedDate} в ${formattedTime}`.replace('г.',' ');
 	};
 
 	return (
-		<form className={styles.form} onSubmit={handleSubmit} noValidate={true}>
+		<form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate={true}>
 			<h1 className={styles.form__title}>Здравствуйте, <span className={styles.name}>{greetingName}</span></h1>
 			{/* Имя */}
 
 			<InputField
 				labelText="Имя"
 				type='text'
-				name='name'
+				{...register('name')}
 				placeholder='Введите имя'
-				value={formData.name}
-				onChange={handleInputChange}
-				error={errors.name?._errors.join(', ')}
+				error={errors.name && errors.name.message}
 				required
 			/>
 
@@ -205,10 +138,8 @@ export const Form = () => {
 			<SelectField
 				labelText='Ваш город'
 				items={cities.map((city: City) => city.city)}
-				name="city"
-				value={formData.city}
-				onChange={handleInputChange}
-				error={errors.city?._errors.join(', ')}
+				{...register('city')}
+				error={errors.city && errors.city.message}
 				required
 			/>
 
@@ -219,22 +150,18 @@ export const Form = () => {
 			<InputField
 				labelText="Пароль"
 				type='password'
-				name='password'
+				{...register('password')}
 				placeholder='Введите пароль'
-				value={formData.password}
-				error={errors.password?._errors.join(', ')}
-				onChange={handleInputChange}
+				error={errors.password && errors.password.message}
 				required
 			/>
 
 			<InputField
 				labelText="Пароль еще раз"
 				type='password'
-				name='confirmPassword'
+				{...register('confirmPassword')}
 				placeholder='Повторите пароль'
-				value={formData.confirmPassword}
-				onChange={handleInputChange}
-				error={errors.confirmPassword?._errors.join(', ')}
+				error={errors.confirmPassword && errors.confirmPassword.message}
 				required
 			/>
 
@@ -244,33 +171,28 @@ export const Form = () => {
 			<PhoneField
 				labelText='Номер телефона'
 				placeholder='+7 (999) 999-99-99'
-				value={formData.phone}
-				onChange={handleInputChange}
-				name="phone"
+				{...register('phone')}
 			/>
 
 
 			<InputField
 				labelText="Электронная почта"
 				type="email"
-				name="email"
-				value={formData.email}
-				onChange={handleInputChange}
+				{...register('email')}
 				placeholder='Введите почту'
-				error={errors.email?._errors.join(', ')}
-				required={formData.agree}
+				error={errors.email && errors.email.message}
+				required={agree}
 			/>
 
 			<CheckboxField
 				labelText={'Я согласен'}
 				labelCheckbox={'принимать актуальную информацию на емейл'}
-				name="agree"
-				checked={formData.agree}
-				onChange={handleInputChange}
+				{...register('agree')}
 			/>
 
 
 			<Submit
+				isSubmiting={isSubmitting}
 				submissionTime={submissionTime}
 			/>
 		</form>
